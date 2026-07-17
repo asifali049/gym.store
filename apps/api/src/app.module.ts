@@ -11,12 +11,14 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { HealthModule } from './modules/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RolesGuard } from './common/guards/roles.guard';
+import { validateEnv } from './common/config/env.validation';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -28,6 +30,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     CouponsModule,
     CategoriesModule,
     BrandsModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }],
 })

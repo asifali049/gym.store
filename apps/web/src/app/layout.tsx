@@ -4,11 +4,22 @@ import { SmoothScrollProvider } from '@/components/animations/smooth-scroll-prov
 import { CustomCursor } from '@/components/animations/custom-cursor';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fitnessplatform.com'),
   title: {
     default: 'Fitness Platform | Premium Supplements',
     template: '%s | Fitness Platform',
   },
   description: 'Premium fitness supplements. Whey protein, creatine, pre-workout and more.',
+  openGraph: {
+    title: 'Fitness Platform | Premium Supplements',
+    description: 'Premium fitness supplements. Whey protein, creatine, pre-workout and more.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fitness Platform | Premium Supplements',
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
