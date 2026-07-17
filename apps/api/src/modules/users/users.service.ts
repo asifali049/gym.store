@@ -11,4 +11,9 @@ export class UsersService {
     const { password, ...safe } = user;
     return safe;
   }
+
+  async findAll() {
+    const users = await this.prisma.user.findMany();
+    return users.map(({ password, ...safe }) => safe);
+  }
 }

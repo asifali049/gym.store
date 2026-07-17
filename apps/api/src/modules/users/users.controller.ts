@@ -2,6 +2,7 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -13,5 +14,11 @@ export class UsersController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.usersService.findById(id);
+  }
+
+  @Get()
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  findAll() {
+    return this.usersService.findAll();
   }
 }

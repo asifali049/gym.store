@@ -39,6 +39,12 @@ export class AuthService {
     return this.issueTokens(user.id, user.email, user.role);
   }
 
+  async refresh(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('Invalid refresh token');
+    return this.issueTokens(user.id, user.email, user.role);
+  }
+
   private issueTokens(sub: string, email: string, role: string) {
     const payload = { sub, email, role };
     return {

@@ -145,3 +145,21 @@ model Review {
   comment   String?
   createdAt DateTime @default(now())
 }
+
+enum DiscountType {
+  PERCENTAGE
+  FLAT
+}
+
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Decimal
+  minOrderValue Decimal?
+  maxUses       Int?
+  usedCount     Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+}
