@@ -3,6 +3,8 @@ import './globals.css';
 import { SmoothScrollProvider } from '@/components/animations/smooth-scroll-provider';
 import { CustomCursor } from '@/components/animations/custom-cursor';
 import { PageLoader } from '@/components/animations/page-loader';
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import { QueryProvider } from '@/components/providers/query-provider';
 import { StoreHeader } from '@/components/layout/store-header';
 import { CategoryBar } from '@/components/layout/category-bar';
 import { TrustStrip } from '@/components/layout/trust-strip';
@@ -29,17 +31,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-white">
-        <PageLoader />
-        <CustomCursor />
-        <SmoothScrollProvider>
-          <StoreHeader />
-          <CategoryBar />
-          <TrustStrip />
-          {children}
-          <Footer />
-        </SmoothScrollProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <PageLoader />
+            <CustomCursor />
+            <SmoothScrollProvider>
+              <StoreHeader />
+              <CategoryBar />
+              <TrustStrip />
+              {children}
+              <Footer />
+            </SmoothScrollProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

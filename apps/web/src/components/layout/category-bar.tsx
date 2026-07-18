@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { slugify } from '@/lib/slugify';
 
 const CATEGORIES = [
   { label: 'Brands', items: ['PeakFuel', 'IgniteLabs', 'PureGain', 'CoreStrong', 'VitalForm'] },
@@ -27,10 +28,13 @@ export function CategoryBar() {
             onMouseEnter={() => setOpenIndex(i)}
             onMouseLeave={() => setOpenIndex(null)}
           >
-            <button className="flex items-center gap-1 text-gray-700 transition hover:text-gray-950 dark:text-gray-300 dark:hover:text-white">
+            <Link
+              href={`/category/${slugify(cat.label)}`}
+              className="flex items-center gap-1 text-gray-700 transition hover:text-gray-950 dark:text-gray-300 dark:hover:text-white"
+            >
               {cat.label}
               <ChevronDown size={14} className={`transition-transform ${openIndex === i ? 'rotate-180' : ''}`} />
-            </button>
+            </Link>
 
             <AnimatePresence>
               {openIndex === i && (
@@ -44,7 +48,7 @@ export function CategoryBar() {
                   {cat.items.map((item) => (
                     <Link
                       key={item}
-                      href="#"
+                      href={`/category/${slugify(item)}`}
                       className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
                     >
                       {item}

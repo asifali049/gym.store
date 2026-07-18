@@ -26,7 +26,10 @@ export class AuthService {
       },
     });
 
-    return this.issueTokens(user.id, user.email, user.role);
+    return {
+      ...this.issueTokens(user.id, user.email, user.role),
+      user: this.toSafeUser(user),
+    };
   }
 
   async login(dto: LoginDto) {
@@ -36,13 +39,23 @@ export class AuthService {
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
 
-    return this.issueTokens(user.id, user.email, user.role);
+    return {
+      ...this.issueTokens(user.id, user.email, user.role),
+      user: this.toSafeUser(user),
+    };
   }
 
   async refresh(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('Invalid refresh token');
-    return this.issueTokens(user.id, user.email, user.role);
+    return {
+      ...this.issueTokens(user.id, user.email, user.role),
+      user: this.toSafeUser(user),
+    };
+  }
+
+  private toSafeUser(user: { id: string; email: string; firstName: string; lastName: string; role: string }) {
+    return { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role };
   }
 
   private issueTokens(sub: string, email: string, role: string) {

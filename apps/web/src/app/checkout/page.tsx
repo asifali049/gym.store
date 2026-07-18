@@ -11,6 +11,7 @@ import { formatINR } from '@/lib/format';
 import { useAuthStore } from '@/lib/auth-store';
 import { ApiError } from '@/lib/api-client';
 
+
 export default function CheckoutPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -42,8 +43,17 @@ export default function CheckoutPage() {
     if (addresses && addresses.length === 0) setShowNewAddress(true);
   }, [addresses, selectedAddressId]);
 
-  const subtotal = (cart?.items ?? []).reduce((sum, item) => sum + item.variant.price * item.quantity, 0);
-  const total = Math.max(0, subtotal - discount);
+const subtotal = (cart?.items ?? []).reduce(
+  (sum: number, item: { variant: { price: number | string }; quantity: number }) => {
+    const price = Number(item.variant?.price ?? 0);
+    const quantity = Number(item.quantity ?? 0);
+
+    return sum + price * quantity;
+  },
+  0,
+);
+
+const total = Math.max(0, subtotal - discount);
 
   const addAddress = useMutation({
     mutationFn: () => createAddress(addressForm),
@@ -112,12 +122,40 @@ export default function CheckoutPage() {
     },
   });
 
-  if (!user || !cart) return null;
+  if (!user) return null;
+
+  if (!cart) {
+    return (
+      <main className="mx-auto max-w-2xl px-6 py-24">
+        <div className="space-y-4 animate-pulse">
+          <div className="h-8 w-48 rounded bg-gray-200 dark:bg-gray-800" />
+          <div className="h-24 rounded-xl bg-gray-200 dark:bg-gray-800" />
+          <div className="h-24 rounded-xl bg-gray-200 dark:bg-gray-800" />
+          <div className="h-14 rounded-xl bg-gray-200 dark:bg-gray-800" />
+        </div>
+      </main>
+    );
+  }
 
   if (cart.items.length === 0) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <p className="text-gray-500">Your cart is empty — nothing to check out.</p>
+        <div className="rounded-3xl border border-dashed border-gray-300 p-12 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold">
+            Your cart is empty
+          </h2>
+
+          <p className="mt-3 text-gray-500">
+            Add some products before proceeding to checkout.
+          </p>
+
+          <Button
+            className="mt-6"
+            onClick={() => router.push('/products')}
+          >
+            Continue Shopping
+          </Button>
+        </div>
       </main>
     );
   }
@@ -136,11 +174,10 @@ export default function CheckoutPage() {
             {addresses.map((address) => (
               <label
                 key={address.id}
-                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm ${
-                  selectedAddressId === address.id
+                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm ${selectedAddressId === address.id
                     ? 'border-gray-900 dark:border-white'
                     : 'border-gray-200 dark:border-gray-800'
-                }`}
+                  }`}
               >
                 <input
                   type="radio"
@@ -210,7 +247,7 @@ export default function CheckoutPage() {
               />
             </div>
             <Button type="submit" disabled={addAddress.isPending}>
-              {addAddress.isPending ? 'Saving…' : 'Save address'}
+              {addAddress.isPending ? "Saving Address..." : "Save Address"}
             </Button>
           </form>
         )}
@@ -226,12 +263,20 @@ export default function CheckoutPage() {
             className="flex-1 rounded-lg border border-gray-200 bg-transparent px-3 py-2 text-sm dark:border-gray-800"
           />
           <Button
-            type="button"
-            onClick={() => applyCouponMutation.mutate()}
-            disabled={!couponCode || applyCouponMutation.isPending}
-          >
-            Apply
-          </Button>
+  type="button"
+  onClick={() => {
+    setCouponError(null);
+    applyCouponMutation.mutate();
+  }}
+  disabled={
+    !couponCode.trim() ||
+    applyCouponMutation.isPending
+  }
+>
+  {applyCouponMutation.isPending
+    ? "Applying..."
+    : "Apply"}
+</Button>
         </div>
         {couponError && <p className="mt-2 text-sm text-red-500">{couponError}</p>}
         {discount > 0 && <p className="mt-2 text-sm text-green-600">Coupon applied — {formatINR(discount)} off</p>}
@@ -257,11 +302,16 @@ export default function CheckoutPage() {
       {placeError && <p className="mt-4 text-sm text-red-500">{placeError}</p>}
 
       <Button
-        onClick={() => placeOrder.mutate()}
+        onClick={() => {
+    if (!placeOrder.isPending) {
+      setPlaceError(null);
+      placeOrder.mutate();
+    }
+  }}
         disabled={!selectedAddressId || placeOrder.isPending}
         className="mt-6 w-full"
       >
-        {placeOrder.isPending ? 'Placing order…' : `Place Order — ${formatINR(total)}`}
+        {placeOrder.isPending ? "Processing Payment..." : `Place Order — ${formatINR(total)}`}
       </Button>
     </main>
   );

@@ -10,18 +10,17 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fitness-platform/ui": "workspace:*",
-    "@fitness-platform/types": "workspace:*",
-    "@fitness-platform/config": "workspace:*",
-
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "framer-motion": "^11.15.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.18",
+    "next-themes": "^0.4.4",
     "zustand": "^5.0.2",
     "@tanstack/react-query": "^5.62.0",
+    "@fitness-platform/ui": "workspace:*",
+    "@fitness-platform/types": "workspace:*",
     "lucide-react": "^0.468.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.5.5"

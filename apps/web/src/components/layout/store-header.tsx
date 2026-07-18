@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, ShoppingBag, Gift, Menu, X } from 'lucide-react';
+import { ThemeToggle } from './theme-toggle';
+import { slugify } from '@/lib/slugify';
 
 export function StoreHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,6 +40,7 @@ export function StoreHeader() {
         </form>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           <button
             aria-label="Rewards"
             className="hidden rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-white sm:block"
@@ -53,7 +56,8 @@ export function StoreHeader() {
               0
             </span>
           </button>
-          <button
+          <Link
+            href="/cart"
             aria-label="Cart"
             className="relative rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-white"
           >
@@ -61,7 +65,7 @@ export function StoreHeader() {
             <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-[10px] font-semibold text-white">
               2
             </span>
-          </button>
+          </Link>
           <button
             aria-label="Menu"
             onClick={() => setMobileOpen(true)}
@@ -98,13 +102,16 @@ export function StoreHeader() {
               <span className="text-lg font-bold text-white">
                 PEAK<span className="text-brand-accent">FUEL</span>
               </span>
-              <button
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close menu"
-                className="rounded-full p-2 text-white hover:bg-white/10"
-              >
-                <X size={22} />
-              </button>
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                  className="rounded-full p-2 text-white hover:bg-white/10"
+                >
+                  <X size={22} />
+                </button>
+              </div>
             </div>
             <nav className="flex flex-col gap-1 px-6 py-2">
               {['Brands', 'Benefits/Concern', 'Sports Nutrition', 'Vitamins & Supplements', 'Healthy Snacking', 'Accessories'].map(
@@ -116,7 +123,7 @@ export function StoreHeader() {
                     transition={{ delay: i * 0.06 }}
                   >
                     <Link
-                      href="#"
+                      href={`/category/${slugify(label)}`}
                       onClick={() => setMobileOpen(false)}
                       className="block border-b border-white/10 py-4 text-lg font-medium text-white"
                     >

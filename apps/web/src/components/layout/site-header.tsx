@@ -15,7 +15,16 @@ export function SiteHeader() {
     enabled: !!user,
   });
 
-  const itemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+const itemCount =
+  cart?.items.reduce<number>(
+    (
+      sum: number,
+      item: {
+        quantity: number;
+      },
+    ) => sum + Number(item.quantity ?? 0),
+    0,
+  ) ?? 0;
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-gray-950/80">

@@ -1,27 +1,42 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AuthTokens, UserDTO } from '@fitness-platform/types';
+
+interface AuthUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 interface AuthState {
-  user: UserDTO | null;
   accessToken: string | null;
   refreshToken: string | null;
-  setSession: (tokens: AuthTokens, user: UserDTO) => void;
-  setTokens: (tokens: AuthTokens) => void;
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+  setSession: (tokens: { accessToken: string; refreshToken: string }, user?: AuthUser) => void;
   logout: () => void;
 }
 
+// Persisted to localStorage so the session survives a page refresh.
+// Note: this is a real deployed Next.js app (not a claude.ai artifact), so
+// browser storage APIs are fully supported here.
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      user: null,
       accessToken: null,
       refreshToken: null,
+      user: null,
+      isAuthenticated: false,
       setSession: (tokens, user) =>
-        set({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, user }),
-      setTokens: (tokens) => set({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }),
-      logout: () => set({ user: null, accessToken: null, refreshToken: null }),
+        set({
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          user: user ?? null,
+          isAuthenticated: true,
+        }),
+      logout: () => set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false }),
     }),
-    { name: 'fp-auth' },
+    { name: 'peakfuel-auth' },
   ),
 );
