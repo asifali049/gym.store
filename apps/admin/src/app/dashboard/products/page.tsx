@@ -21,7 +21,7 @@ interface ProductRow {
 const SAMPLE_PRODUCTS: ProductRow[] = [
   {
     id: 'p_1',
-    image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=200&h=200&fit=crop',
+    image: 'https://picsum.photos/seed/whey-isolate-gold/200/200',
     name: 'Whey Isolate Gold',
     brand: 'PeakFuel',
     category: 'Whey Protein',
@@ -35,7 +35,7 @@ const SAMPLE_PRODUCTS: ProductRow[] = [
   },
   {
     id: 'p_2',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop',
+    image: 'https://picsum.photos/seed/creatine-mono/200/200',
     name: 'Creatine Monohydrate',
     brand: 'PeakFuel',
     category: 'Creatine',
@@ -49,7 +49,7 @@ const SAMPLE_PRODUCTS: ProductRow[] = [
   },
   {
     id: 'p_3',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop',
+    image: 'https://picsum.photos/seed/creatine-mono/200/200',
     name: 'Pre-Workout Ignite',
     brand: 'IgniteLabs',
     category: 'Pre Workout',
@@ -63,7 +63,7 @@ const SAMPLE_PRODUCTS: ProductRow[] = [
   },
   {
     id: 'p_4',
-    image: 'https://images.unsplash.com/photo-1622484212385-a83c6c8a9c4c?w=200&h=200&fit=crop',
+    image: 'https://picsum.photos/seed/mass-gainer-xl/200/200',
     name: 'Mass Gainer XL',
     brand: 'PeakFuel',
     category: 'Mass Gainer',

@@ -10,8 +10,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fitness-platform/types": "workspace:*",
     "@fitness-platform/ui": "workspace:*",
+    "@fitness-platform/types": "workspace:*",
+    "@fitness-platform/config": "workspace:*",
+
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

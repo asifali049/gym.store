@@ -4,7 +4,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 
@@ -18,15 +17,6 @@ export class OrdersController {
   @Post('checkout')
   checkout(@CurrentUser() user: { userId: string }, @Body() dto: CheckoutDto) {
     return this.ordersService.checkout(user.userId, dto);
-  }
-
-  @Post(':id/verify-payment')
-  verifyPayment(
-    @CurrentUser() user: { userId: string },
-    @Param('id') id: string,
-    @Body() dto: VerifyPaymentDto,
-  ) {
-    return this.ordersService.verifyPayment(user.userId, id, dto);
   }
 
   @Get()

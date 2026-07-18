@@ -14,21 +14,21 @@ enum Role {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  email         String     @unique
-  password      String
-  firstName     String
-  lastName      String
-  phone         String?
-  role          Role       @default(CUSTOMER)
-  emailVerified Boolean    @default(false)
-  addresses     Address[]
-  orders        Order[]
-  wishlist      Wishlist[]
-  cart          Cart?
-  reviews       Review[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id           String    @id @default(uuid())
+  email        String    @unique
+  password     String
+  firstName    String
+  lastName     String
+  phone        String?
+  role         Role      @default(CUSTOMER)
+  emailVerified Boolean  @default(false)
+  addresses    Address[]
+  orders       Order[]
+  wishlist     Wishlist[]
+  cart         Cart?
+  reviews      Review[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Address {
@@ -43,8 +43,6 @@ model Address {
   country   String   @default("India")
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  @@index([userId])
 }
 
 model Brand {
@@ -75,29 +73,22 @@ model Product {
   basePrice   Decimal
   variants    ProductVariant[]
   reviews     Review[]
-  wishlistedBy Wishlist[]
   isActive    Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-
-  // Storefront listing always filters on isActive (+ optionally category); this keeps
-  // that lookup off a full table scan as the catalog grows.
-  @@index([isActive, categoryId])
 }
 
 model ProductVariant {
-  id         String      @id @default(uuid())
-  product    Product     @relation(fields: [productId], references: [id])
-  productId  String
-  flavor     String?
-  weight     String?
-  price      Decimal
-  stock      Int         @default(0)
-  sku        String      @unique
-  cartItems  CartItem[]
+  id        String      @id @default(uuid())
+  product   Product     @relation(fields: [productId], references: [id])
+  productId String
+  flavor    String?
+  weight    String?
+  price     Decimal
+  stock     Int         @default(0)
+  sku       String      @unique
+  cartItems CartItem[]
   orderItems OrderItem[]
-
-  @@index([productId])
 }
 
 model Cart {
@@ -114,30 +105,23 @@ model CartItem {
   variant   ProductVariant @relation(fields: [variantId], references: [id])
   variantId String
   quantity  Int            @default(1)
-
-  // A variant should only ever appear once per cart — addItem() relies on this to
-  // decide between "create" and "increment quantity".
-  @@unique([cartId, variantId])
 }
 
 model Wishlist {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  product   Product  @relation(fields: [productId], references: [id])
   productId String
   createdAt DateTime @default(now())
-
-  // Prevents the same product being wishlisted twice by the same user.
-  @@unique([userId, productId])
 }
 
 enum OrderStatus {
   PENDING
-  PAID
+  CONFIRMED
   SHIPPED
   DELIVERED
   CANCELLED
+  REFUNDED
 }
 
 model Order {
@@ -147,10 +131,7 @@ model Order {
   items       OrderItem[]
   status      OrderStatus @default(PENDING)
   totalAmount Decimal
-  payment     Payment?
   createdAt   DateTime    @default(now())
-
-  @@index([userId])
 }
 
 model OrderItem {
@@ -161,30 +142,6 @@ model OrderItem {
   variantId String
   quantity  Int
   price     Decimal
-
-  @@index([orderId])
-}
-
-enum PaymentStatus {
-  CREATED
-  SUCCEEDED
-  FAILED
-}
-
-// Tracks the Razorpay order/payment lifecycle for an Order. Created when a Razorpay
-// order is opened at checkout, then updated by the payment verification / webhook
-// handler once Razorpay confirms the transaction.
-model Payment {
-  id                 String        @id @default(uuid())
-  order              Order         @relation(fields: [orderId], references: [id])
-  orderId            String        @unique
-  provider           String        @default("razorpay")
-  providerOrderId    String        @unique
-  providerPaymentId  String?
-  status             PaymentStatus @default(CREATED)
-  amount             Decimal
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
 }
 
 model Review {
@@ -196,10 +153,6 @@ model Review {
   rating    Int
   comment   String?
   createdAt DateTime @default(now())
-
-  // One review per user per product.
-  @@unique([userId, productId])
-  @@index([productId])
 }
 
 enum DiscountType {

@@ -42,9 +42,23 @@ export default function CartPage() {
     return <main className="mx-auto max-w-3xl px-6 py-24 text-center text-gray-500">Loading cart…</main>;
   }
 
-  const items = cart?.items ?? [];
-  const total = items.reduce((sum, item) => sum + item.variant.price * item.quantity, 0);
+  const items = (cart?.items ?? []) as Array<{
+  id: string;
+  quantity: number;
+  variant: {
+    price: number;
+    flavor?: string | null;
+    weight?: string | null;
+    product: {
+      name: string;
+    };
+  };
+}>;
 
+const total = items.reduce<number>(
+  (sum, item) => sum + item.variant.price * item.quantity,
+  0
+);
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="mb-10 text-2xl font-semibold tracking-tight">Your Cart</h1>
