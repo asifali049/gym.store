@@ -17,20 +17,27 @@ let refreshPromise: Promise<boolean> | null = null;
 async function refreshSession(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = (async () => {
-      const { refreshToken, setTokens, logout } = useAuthStore.getState();
+      const { refreshToken, user, setSession, logout } = useAuthStore.getState();
+
       if (!refreshToken) return false;
 
       try {
         const res = await fetch(`${API_URL}/auth/refresh`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${refreshToken}` },
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
         });
+
         if (!res.ok) {
           logout();
           return false;
         }
+
         const tokens = await res.json();
-        setTokens(tokens);
+
+        setSession(tokens, user ?? undefined);
+
         return true;
       } catch {
         logout();
@@ -40,6 +47,7 @@ async function refreshSession(): Promise<boolean> {
       }
     })();
   }
+
   return refreshPromise;
 }
 

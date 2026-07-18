@@ -21,9 +21,19 @@ export function login(email: string, password: string) {
   });
 }
 
-export function register(data: { email: string; password: string; firstName: string; lastName: string }) {
+export function register(data: {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}) {
   return apiFetch<AuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+}
+
+// ✅ Add this
+export function fetchMe() {
+  return apiFetch<AuthUser>('/auth/me');
 }

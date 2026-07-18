@@ -11,7 +11,6 @@ import { ApiError } from '@/lib/api-client';
 export default function RegisterPage() {
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
-  const setTokens = useAuthStore((s) => s.setTokens);
 
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +26,6 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const tokens = await register(form);
-      setTokens(tokens);
       const me = await fetchMe();
       setSession(tokens, me);
       router.push('/');
