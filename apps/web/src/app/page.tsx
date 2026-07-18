@@ -1,16 +1,23 @@
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { TextReveal } from '@/components/animations/text-reveal';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
 import { MagneticButton } from '@/components/animations/magnetic-button';
 import { ProductCardTilt } from '@/components/animations/product-card-tilt';
 import { Counter } from '@/components/animations/counter';
-
-const FEATURED = [
-  { name: 'Whey Isolate Gold', price: '₹2,499', tag: 'Best Seller' },
-  { name: 'Creatine Monohydrate', price: '₹899', tag: 'Trending' },
-  { name: 'Pre-Workout Ignite', price: '₹1,299', tag: 'New' },
-];
+import { fetchProducts } from '@/lib/api/products';
+import { formatINR } from '@/lib/format';
 
 export default function HomePage() {
+  const router = useRouter();
+  const { data: featured } = useQuery({
+    queryKey: ['products', 'featured'],
+    queryFn: () => fetchProducts({ take: 3 }),
+  });
+
   return (
     <main>
       {/* Hero */}
@@ -24,7 +31,10 @@ export default function HomePage() {
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.6}>
-          <MagneticButton className="mt-4 rounded-full bg-gray-900 px-8 py-4 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
+          <MagneticButton
+            onClick={() => router.push('/products')}
+            className="mt-4 rounded-full bg-gray-900 px-8 py-4 text-sm font-medium text-white dark:bg-white dark:text-gray-900"
+          >
             Shop Now
           </MagneticButton>
         </ScrollReveal>
@@ -52,15 +62,17 @@ export default function HomePage() {
           <h2 className="mb-10 text-center text-3xl font-semibold">Best Sellers</h2>
         </ScrollReveal>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
-          {FEATURED.map((product, i) => (
-            <ScrollReveal key={product.name} delay={i * 0.1}>
-              <ProductCardTilt className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <span className="text-xs font-medium uppercase tracking-wide text-brand-accent">
-                  {product.tag}
-                </span>
-                <h3 className="mt-3 text-lg font-semibold">{product.name}</h3>
-                <p className="mt-1 text-gray-500">{product.price}</p>
-              </ProductCardTilt>
+          {(featured ?? []).map((product, i) => (
+            <ScrollReveal key={product.id} delay={i * 0.1}>
+              <Link href={`/products/${product.slug}`}>
+                <ProductCardTilt className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                  <span className="text-xs font-medium uppercase tracking-wide text-brand-accent">
+                    {product.brand.name}
+                  </span>
+                  <h3 className="mt-3 text-lg font-semibold">{product.name}</h3>
+                  <p className="mt-1 text-gray-500">{formatINR(product.basePrice)}</p>
+                </ProductCardTilt>
+              </Link>
             </ScrollReveal>
           ))}
         </div>

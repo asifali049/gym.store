@@ -3,6 +3,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CheckoutDto } from './dto/checkout.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 
@@ -18,6 +20,15 @@ export class OrdersController {
     return this.ordersService.checkout(user.userId, dto);
   }
 
+  @Post(':id/verify-payment')
+  verifyPayment(
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() dto: VerifyPaymentDto,
+  ) {
+    return this.ordersService.verifyPayment(user.userId, id, dto);
+  }
+
   @Get()
   findMine(@CurrentUser() user: { userId: string }) {
     return this.ordersService.findMine(user.userId);
@@ -30,7 +41,7 @@ export class OrdersController {
 
   @Patch(':id/status')
   @Roles('ADMIN', 'SUPER_ADMIN')
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.ordersService.updateStatus(id, status);
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {
+    return this.ordersService.updateStatus(id, dto.status);
   }
 }

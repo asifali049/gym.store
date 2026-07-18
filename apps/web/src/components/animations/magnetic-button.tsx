@@ -3,7 +3,15 @@
 import { useRef, ReactNode, MouseEvent } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
-export function MagneticButton({ children, className }: { children: ReactNode; className?: string }) {
+export function MagneticButton({
+  children,
+  className,
+  onClick,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -29,6 +37,7 @@ export function MagneticButton({ children, className }: { children: ReactNode; c
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={reset}
+      onClick={onClick}
       style={{ x: springX, y: springY }}
       className={className}
     >

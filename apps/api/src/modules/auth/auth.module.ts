@@ -10,7 +10,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'change-me',
+      secret: process.env.JWT_SECRET,
     }),
   ],
   controllers: [AuthController],
