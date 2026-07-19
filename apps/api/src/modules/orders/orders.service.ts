@@ -87,6 +87,20 @@ export class OrdersService {
     });
   }
 
+  // Admin-only — every order across all customers, for the dashboard order list.
+  async findAllForAdmin(params: { skip?: number; take?: number; status?: OrderStatus }) {
+    return this.prisma.order.findMany({
+      where: params.status ? { status: params.status } : undefined,
+      include: {
+        user: { select: { firstName: true, lastName: true, email: true } },
+        items: { include: { variant: { include: { product: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: params.skip,
+      take: params.take ?? 50,
+    });
+  }
+
   async findOne(userId: string, orderId: string, role: string) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },

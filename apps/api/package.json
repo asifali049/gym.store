@@ -12,7 +12,11 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.0",
@@ -22,6 +26,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/swagger": "^8.0.0",
     "@nestjs/config": "^3.3.0",
+    "@nestjs/throttler": "^6.3.0",
     "@prisma/client": "^5.22.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -40,6 +45,7 @@
     "@types/express": "^4.17.21",
     "@types/passport-jwt": "^4.0.1",
     "@types/bcrypt": "^5.0.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
 }

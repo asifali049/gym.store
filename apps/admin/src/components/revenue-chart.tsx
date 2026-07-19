@@ -2,20 +2,15 @@
 
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-const DATA = [
-  { day: 'Mon', revenue: 42000 },
-  { day: 'Tue', revenue: 51000 },
-  { day: 'Wed', revenue: 47500 },
-  { day: 'Thu', revenue: 61200 },
-  { day: 'Fri', revenue: 58900 },
-  { day: 'Sat', revenue: 72300 },
-  { day: 'Sun', revenue: 68100 },
-];
+export interface RevenuePoint {
+  day: string;
+  revenue: number;
+}
 
-export function RevenueChart() {
+export function RevenueChart({ data }: { data: RevenuePoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <AreaChart data={DATA}>
+      <AreaChart data={data}>
         <defs>
           <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#22c55e" stopOpacity={0.35} />

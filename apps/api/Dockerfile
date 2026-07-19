@@ -30,4 +30,4 @@ COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/apps/api/node_modules ./node_modules
 
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD npx prisma migrate deploy && node dist/main.js

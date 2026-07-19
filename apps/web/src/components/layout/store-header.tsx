@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, ShoppingBag, Gift, Menu, X } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Gift, Menu, X, LogOut } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
+import { AccountMenu } from './account-menu';
 import { slugify } from '@/lib/slugify';
+import { useAuthStore } from '@/lib/auth-store';
 
 export function StoreHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   useEffect(() => {
     if (mobileOpen) document.body.style.overflow = 'hidden';
@@ -41,6 +44,7 @@ export function StoreHeader() {
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <ThemeToggle />
+          <AccountMenu />
           <button
             aria-label="Rewards"
             className="hidden rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-white sm:block"
@@ -133,6 +137,41 @@ export function StoreHeader() {
                 ),
               )}
             </nav>
+            <div className="mt-4 px-6">
+              {isAuthenticated && user ? (
+                <div className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3">
+                  <span className="text-sm text-white">Hi, {user.firstName}</span>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileOpen(false);
+                    }}
+                    aria-label="Log out"
+                    className="flex items-center gap-1.5 text-sm text-red-400"
+                  >
+                    <LogOut size={15} />
+                    Log out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex-1 rounded-full border border-white/20 px-5 py-3 text-center text-sm font-medium text-white"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex-1 rounded-full bg-brand-accent px-5 py-3 text-center text-sm font-medium text-white"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

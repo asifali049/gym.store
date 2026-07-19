@@ -1,89 +1,44 @@
-import { DataTable, ProductThumb, StarRating } from '@/components/data-table';
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import { DataTable, ProductThumb } from '@/components/data-table';
+import { fetchProducts } from '@/lib/api/products';
+import { ApiError } from '@/lib/api/client';
 
 interface ProductRow {
   id: string;
-  image: string;
   name: string;
   brand: string;
   category: string;
-  flavor: string;
-  weight: string;
-  sku: string;
   price: number;
-  stock: number;
-  rating: number;
-  status: 'ACTIVE' | 'DRAFT' | 'OUT_OF_STOCK';
+  variantCount: number;
+  totalStock: number;
+  status: 'ACTIVE' | 'DRAFT';
 }
-
-// Static sample data — swap for a live apiFetch<ProductRow[]>('/products') call
-// once the API is running. Fields mirror the ProductVariant + Product Prisma models
-// (flavor, weight, sku, stock) plus a few admin-UI-only fields (image, rating, status).
-const SAMPLE_PRODUCTS: ProductRow[] = [
-  {
-    id: 'p_1',
-    image: 'https://picsum.photos/seed/whey-isolate-gold/200/200',
-    name: 'Whey Isolate Gold',
-    brand: 'PeakFuel',
-    category: 'Whey Protein',
-    flavor: 'Chocolate Fudge',
-    weight: '2 kg',
-    sku: 'WIG-CHOC-2KG',
-    price: 2499,
-    stock: 142,
-    rating: 4.6,
-    status: 'ACTIVE',
-  },
-  {
-    id: 'p_2',
-    image: 'https://picsum.photos/seed/creatine-mono/200/200',
-    name: 'Creatine Monohydrate',
-    brand: 'PeakFuel',
-    category: 'Creatine',
-    flavor: 'Unflavored',
-    weight: '500 g',
-    sku: 'CRT-UNF-500G',
-    price: 899,
-    stock: 310,
-    rating: 4.8,
-    status: 'ACTIVE',
-  },
-  {
-    id: 'p_3',
-    image: 'https://picsum.photos/seed/creatine-mono/200/200',
-    name: 'Pre-Workout Ignite',
-    brand: 'IgniteLabs',
-    category: 'Pre Workout',
-    flavor: 'Blue Raspberry',
-    weight: '300 g',
-    sku: 'PWI-BLUR-300G',
-    price: 1299,
-    stock: 58,
-    rating: 4.3,
-    status: 'ACTIVE',
-  },
-  {
-    id: 'p_4',
-    image: 'https://picsum.photos/seed/mass-gainer-xl/200/200',
-    name: 'Mass Gainer XL',
-    brand: 'PeakFuel',
-    category: 'Mass Gainer',
-    flavor: 'Vanilla',
-    weight: '3 kg',
-    sku: 'MGX-VAN-3KG',
-    price: 2199,
-    stock: 0,
-    rating: 4.1,
-    status: 'OUT_OF_STOCK',
-  },
-];
 
 const STATUS_STYLES: Record<ProductRow['status'], string> = {
   ACTIVE: 'bg-emerald-100 text-emerald-700',
   DRAFT: 'bg-gray-100 text-gray-600',
-  OUT_OF_STOCK: 'bg-red-100 text-red-700',
 };
 
 export default function ProductsPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['admin', 'products'],
+    queryFn: fetchProducts,
+  });
+
+  const rows: ProductRow[] =
+    data?.map((p) => ({
+      id: p.id,
+      name: p.name,
+      brand: p.brand.name,
+      category: p.category.name,
+      price: Number(p.basePrice),
+      variantCount: p.variants.length,
+      totalStock: p.variants.reduce((sum, v) => sum + v.stock, 0),
+      status: p.isActive ? 'ACTIVE' : 'DRAFT',
+    })) ?? [];
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -92,52 +47,50 @@ export default function ProductsPage() {
           + Add Product
         </button>
       </div>
-      <DataTable<ProductRow>
-        rows={SAMPLE_PRODUCTS}
-        columns={[
-          {
-            key: 'image',
-            label: '',
-            render: (row) => <ProductThumb src={row.image} alt={row.name} />,
-          },
-          {
-            key: 'name',
-            label: 'Product',
-            render: (row) => (
-              <div>
-                <p className="font-medium">{row.name}</p>
-                <p className="text-xs text-gray-500">{row.flavor}</p>
-              </div>
-            ),
-          },
-          { key: 'sku', label: 'SKU' },
-          { key: 'brand', label: 'Brand' },
-          { key: 'category', label: 'Category' },
-          { key: 'weight', label: 'Weight / Size' },
-          { key: 'price', label: 'Price', render: (row) => `₹${row.price.toLocaleString()}` },
-          {
-            key: 'stock',
-            label: 'Stock',
-            render: (row) => (
-              <span className={row.stock < 20 ? 'font-medium text-red-600' : ''}>{row.stock}</span>
-            ),
-          },
-          {
-            key: 'rating',
-            label: 'Rating',
-            render: (row) => <StarRating rating={row.rating} />,
-          },
-          {
-            key: 'status',
-            label: 'Status',
-            render: (row) => (
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[row.status]}`}>
-                {row.status.replace('_', ' ')}
-              </span>
-            ),
-          },
-        ]}
-      />
+
+      {isLoading && <p className="text-sm text-gray-500">Loading products...</p>}
+
+      {error && (
+        <p className="text-sm text-red-600">
+          {error instanceof ApiError ? error.message : "Couldn't load products. Is the API running?"}
+        </p>
+      )}
+
+      {!isLoading && !error && (
+        <DataTable<ProductRow>
+          rows={rows}
+          columns={[
+            {
+              key: 'name',
+              label: 'Product',
+              render: (row) => (
+                <div className="flex items-center gap-3">
+                  <ProductThumb src={`https://picsum.photos/seed/${row.id}/100/100`} alt={row.name} />
+                  <span className="font-medium">{row.name}</span>
+                </div>
+              ),
+            },
+            { key: 'brand', label: 'Brand' },
+            { key: 'category', label: 'Category' },
+            { key: 'price', label: 'Base Price', render: (row) => `₹${row.price.toLocaleString()}` },
+            { key: 'variantCount', label: 'Variants' },
+            {
+              key: 'totalStock',
+              label: 'Total Stock',
+              render: (row) => <span className={row.totalStock < 20 ? 'font-medium text-red-600' : ''}>{row.totalStock}</span>,
+            },
+            {
+              key: 'status',
+              label: 'Status',
+              render: (row) => (
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[row.status]}`}>
+                  {row.status}
+                </span>
+              ),
+            },
+          ]}
+        />
+      )}
     </div>
   );
 }

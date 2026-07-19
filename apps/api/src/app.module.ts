@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -19,6 +20,14 @@ import { validateEnv } from './common/config/env.validation';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
+    ThrottlerModule.forRoot([
+      {
+        // Default site-wide limit: 60 requests per minute per IP.
+        // Auth endpoints override this with a stricter limit — see auth.controller.ts.
+        ttl: 60_000,
+        limit: 60,
+      },
+    ]),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -32,6 +41,9 @@ import { validateEnv } from './common/config/env.validation';
     BrandsModule,
     HealthModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: RolesGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}

@@ -4,11 +4,14 @@ import { Suspense, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
-import { Button } from '@fitness-platform/ui';
+import { Mail, Lock } from 'lucide-react';
 import { login } from '@/lib/api/auth';
 import { ApiError } from '@/lib/api/client';
 import { useAuthStore } from '@/lib/auth-store';
-import { ScrollReveal } from '@/components/animations/scroll-reveal';
+import { AuthSplitLayout } from '@/components/auth/auth-split-layout';
+import { FloatingInput } from '@/components/auth/floating-input';
+import { AuthButton } from '@/components/auth/auth-button';
+import { SocialButtons } from '@/components/auth/social-buttons';
 
 function LoginForm() {
   const router = useRouter();
@@ -18,6 +21,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
 
   const mutation = useMutation({
     mutationFn: () => login(email, password),
@@ -36,60 +40,83 @@ function LoginForm() {
     mutation.error instanceof ApiError ? mutation.error.message : mutation.error ? 'Something went wrong. Please try again.' : null;
 
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
-      <ScrollReveal>
-        <h1 className="text-3xl font-semibold">Welcome back</h1>
-        <p className="mt-2 text-gray-500">Sign in to your PeakFuel account.</p>
-      </ScrollReveal>
+    <>
+      <h1 className="text-3xl font-semibold tracking-tight">Welcome Back</h1>
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Sign in to continue your fitness journey.</p>
 
-      <ScrollReveal delay={0.1}>
-        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            Email
+      <div className="mt-7">
+        <SocialButtons />
+      </div>
+
+      <div className="my-7 flex items-center gap-3">
+        <div className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+        <span className="text-xs font-medium uppercase tracking-wide text-gray-400">Or</span>
+        <div className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+        <FloatingInput
+          label="Email"
+          type="email"
+          autoComplete="email"
+          required
+          icon={<Mail size={17} />}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <FloatingInput
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          required
+          icon={<Lock size={17} />}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:focus:border-white"
-              placeholder="you@example.com"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 accent-gray-900 dark:accent-white"
             />
+            Remember me
           </label>
-
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            Password
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:focus:border-white"
-              placeholder="••••••••"
-            />
-          </label>
-
-          {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-
-          <Button type="submit" disabled={mutation.isPending} className="mt-2 w-full">
-            {mutation.isPending ? 'Signing in...' : 'Sign In'}
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Don't have an account?{' '}
-          <Link href="/signup" className="font-medium text-gray-900 hover:underline dark:text-white">
-            Sign up
+          <Link href="/forgot-password" className="font-medium text-gray-700 hover:underline dark:text-gray-300">
+            Forgot password?
           </Link>
-        </p>
-      </ScrollReveal>
-    </main>
+        </div>
+
+        {errorMessage && (
+          <p role="alert" className="text-sm text-red-600">
+            {errorMessage}
+          </p>
+        )}
+
+        <AuthButton type="submit" loading={mutation.isPending} loadingLabel="Signing in..." className="mt-1">
+          Sign In
+        </AuthButton>
+      </form>
+
+      <p className="mt-7 text-center text-sm text-gray-500 dark:text-gray-400">
+        Don&apos;t have an account?{' '}
+        <Link href="/signup" className="font-semibold text-gray-900 hover:underline dark:text-white">
+          Sign up
+        </Link>
+      </p>
+    </>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
+    <AuthSplitLayout>
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
+    </AuthSplitLayout>
   );
 }
