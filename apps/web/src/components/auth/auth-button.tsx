@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import type { ButtonHTMLAttributes } from 'react';
 
-interface AuthButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type NativeButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration' | 'onDrag' | 'onDragStart' | 'onDragEnd'
+>;
+
+interface AuthButtonProps extends NativeButtonProps {
   loading?: boolean;
   loadingLabel?: string;
 }

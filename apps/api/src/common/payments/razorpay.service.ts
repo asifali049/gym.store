@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
 
 /**
  * Thin wrapper around Razorpay's order API.
@@ -23,7 +24,6 @@ export class RazorpayService {
   }
 
   verifySignature(orderId: string, paymentId: string, signature: string): boolean {
-    const crypto = require('crypto');
     const expected = crypto
       .createHmac('sha256', this.keySecret ?? '')
       .update(`${orderId}|${paymentId}`)

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, Menu, X, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth-store';
+import { logoutRequest } from '@/lib/api/auth';
 
 const NAV = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
@@ -22,6 +23,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = () => {
+    const refreshToken = useAuthStore.getState().refreshToken;
+    if (refreshToken) logoutRequest(refreshToken).catch(() => {});
     logout();
     onNavigate?.();
     router.replace('/login');

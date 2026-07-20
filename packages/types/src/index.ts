@@ -34,6 +34,28 @@ export interface WishlistItemDTO {
   createdAt: string;
 }
 
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+
+export interface OrderItemDTO {
+  id: string;
+  quantity: number;
+  price: number;
+  variant: {
+    id: string;
+    flavor: string | null;
+    weight: string | null;
+    product: { id: string; name: string; slug: string };
+  };
+}
+
+export interface OrderDTO {
+  id: string;
+  status: OrderStatus;
+  totalAmount: number;
+  createdAt: string;
+  items: OrderItemDTO[];
+}
+
 export interface UserDTO {
   id: string;
   email: string;

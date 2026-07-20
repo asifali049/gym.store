@@ -8,6 +8,7 @@ import { ThemeToggle } from './theme-toggle';
 import { AccountMenu } from './account-menu';
 import { slugify } from '@/lib/slugify';
 import { useAuthStore } from '@/lib/auth-store';
+import { logoutRequest } from '@/lib/api/auth';
 
 export function StoreHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -143,6 +144,8 @@ export function StoreHeader() {
                   <span className="text-sm text-white">Hi, {user.firstName}</span>
                   <button
                     onClick={() => {
+                      const refreshToken = useAuthStore.getState().refreshToken;
+                      if (refreshToken) logoutRequest(refreshToken).catch(() => {});
                       logout();
                       setMobileOpen(false);
                     }}

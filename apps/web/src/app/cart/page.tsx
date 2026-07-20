@@ -139,7 +139,9 @@ export default function CartPage() {
         <span className="text-2xl font-semibold">{formatINR(total)}</span>
       </div>
 
-      <Button className="mt-6 w-full">Proceed to Checkout</Button>
+      <Link href="/checkout">
+        <Button className="mt-6 w-full">Proceed to Checkout</Button>
+      </Link>
     </main>
   );
 }

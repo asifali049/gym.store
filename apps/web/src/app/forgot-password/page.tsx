@@ -2,26 +2,28 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
 import { Mail, CheckCircle2 } from 'lucide-react';
+import { forgotPassword } from '@/lib/api/auth';
 import { AuthSplitLayout } from '@/components/auth/auth-split-layout';
 import { FloatingInput } from '@/components/auth/floating-input';
 import { AuthButton } from '@/components/auth/auth-button';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
-  // No backend endpoint for password reset exists yet — this collects the
-  // request and shows confirmation. Wire this up to a real reset-email flow
-  // once that API endpoint is built.
+  const mutation = useMutation({
+    mutationFn: () => forgotPassword(email),
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    mutation.mutate();
   };
 
   return (
     <AuthSplitLayout>
-      {submitted ? (
+      {mutation.isSuccess ? (
         <div className="flex flex-col items-center py-4 text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10">
             <CheckCircle2 size={24} />
@@ -53,7 +55,7 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <AuthButton type="submit" className="mt-1">
+            <AuthButton type="submit" loading={mutation.isPending} loadingLabel="Sending..." className="mt-1">
               Send Reset Link
             </AuthButton>
           </form>

@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, LogOut, ShoppingBag } from 'lucide-react';
+import { User, LogOut, ShoppingBag, Package } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth-store';
+import { logoutRequest } from '@/lib/api/auth';
 
 export function AccountMenu() {
   const router = useRouter();
@@ -34,6 +35,13 @@ export function AccountMenu() {
   }
 
   const handleLogout = () => {
+    const refreshToken = useAuthStore.getState().refreshToken;
+    if (refreshToken) {
+      logoutRequest(refreshToken).catch(() => {
+        // Best-effort — even if this fails (e.g. API unreachable), we still
+        // clear the local session below so the user is logged out client-side.
+      });
+    }
     logout();
     setOpen(false);
     router.push('/');
@@ -61,6 +69,14 @@ export function AccountMenu() {
             <p className="truncate px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">
               Hi, {user.firstName}
             </p>
+            <Link
+              href="/orders"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              <Package size={15} />
+              My Orders
+            </Link>
             <Link
               href="/cart"
               onClick={() => setOpen(false)}

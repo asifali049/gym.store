@@ -1,8 +1,7 @@
-import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateAddressDto {
   @IsString()
-  @MinLength(3)
   line1: string;
 
   @IsOptional()

@@ -12,8 +12,11 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { AddressesModule } from './modules/addresses/addresses.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { HealthModule } from './modules/health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { EmailModule } from './common/email/email.module';
 import { RolesGuard } from './common/guards/roles.guard';
 import { validateEnv } from './common/config/env.validation';
 
@@ -29,6 +32,7 @@ import { validateEnv } from './common/config/env.validation';
       },
     ]),
     PrismaModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     ProductsModule,
@@ -39,6 +43,8 @@ import { validateEnv } from './common/config/env.validation';
     CouponsModule,
     CategoriesModule,
     BrandsModule,
+    AddressesModule,
+    PaymentsModule,
     HealthModule,
   ],
   providers: [
