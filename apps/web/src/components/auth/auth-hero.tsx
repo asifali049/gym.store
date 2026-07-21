@@ -11,12 +11,6 @@ const BENEFITS = [
   { icon: Gift, label: 'Earn Reward Points' },
 ];
 
-const STATS = [
-  { value: '50K+', label: 'Customers' },
-  { value: '100K+', label: 'Orders' },
-  { value: '4.9', label: 'Rating' },
-];
-
 export function AuthHero() {
   return (
     <div className="relative hidden h-full w-full overflow-hidden bg-gray-950 lg:block">
@@ -91,20 +85,6 @@ export function AuthHero() {
               </li>
             ))}
           </motion.ul>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-10 flex gap-8 border-t border-white/10 pt-6"
-          >
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl font-semibold text-white">{stat.value}</p>
-                <p className="text-xs text-gray-400">{stat.label}</p>
-              </div>
-            ))}
-          </motion.div>
         </div>
       </div>
     </div>

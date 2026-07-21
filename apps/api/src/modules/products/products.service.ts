@@ -1,4 +1,5 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -9,9 +10,13 @@ import { UpdateVariantDto } from './dto/update-variant.dto';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll(params: { skip?: number; take?: number; categorySlug?: string }) {
+  findAll(params: { skip?: number; take?: number; categorySlug?: string; brandSlug?: string }) {
+    const where: Prisma.ProductWhereInput = {};
+    if (params.categorySlug) where.category = { slug: params.categorySlug };
+    if (params.brandSlug) where.brand = { slug: params.brandSlug };
+
     return this.prisma.product.findMany({
-      where: params.categorySlug ? { category: { slug: params.categorySlug } } : undefined,
+      where: Object.keys(where).length ? where : undefined,
       include: { brand: true, category: true, variants: true },
       skip: params.skip,
       take: params.take ?? 20,

@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Package, ArrowLeft, Truck, XCircle } from 'lucide-react';
 import type { OrderDTO, OrderStatus } from '@fitness-platform/types';
@@ -80,13 +79,8 @@ export default function OrderDetailPage() {
         <div className="mt-8 flex flex-col gap-4">
           {order.items.map((item) => (
             <div key={item.id} className="flex items-center gap-4 rounded-2xl border border-gray-200 p-4 dark:border-gray-800">
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
-                <Image
-                  src={`https://picsum.photos/seed/${item.variant.id}/160/160`}
-                  alt={item.variant.product.name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xl dark:bg-gray-800">
+                🏋️
               </div>
               <div className="flex-1">
                 <p className="font-medium">{item.variant.product.name}</p>

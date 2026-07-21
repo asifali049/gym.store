@@ -14,11 +14,17 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(@Query('skip') skip?: string, @Query('take') take?: string, @Query('category') category?: string) {
+  findAll(
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+    @Query('category') category?: string,
+    @Query('brand') brand?: string,
+  ) {
     return this.productsService.findAll({
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
       categorySlug: category,
+      brandSlug: brand,
     });
   }
 

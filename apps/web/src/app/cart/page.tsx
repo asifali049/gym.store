@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@fitness-platform/ui';
 import { fetchCart, updateCartItem, removeCartItem, type Cart } from '@/lib/api/cart';
 import { ApiError } from '@/lib/api/client';
@@ -84,13 +83,8 @@ export default function CartPage() {
         {items.map((item, i) => (
           <ScrollReveal key={item.id} delay={Math.min(i * 0.05, 0.2)}>
             <div className="flex items-center gap-4 rounded-2xl border border-gray-200 p-4 dark:border-gray-800">
-              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
-                <Image
-                  src={`https://picsum.photos/seed/${item.variant.id}/200/200`}
-                  alt={item.variant.product.name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-2xl dark:bg-gray-800">
+                🏋️
               </div>
 
               <div className="flex-1">
